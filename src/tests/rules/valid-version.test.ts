@@ -1,107 +1,51 @@
-import { rules } from '../../rules/valid-properties.ts';
-import { ruleTester } from './ruleTester.ts';
+import { rule } from "../../rules/valid-version.js";
+import { ruleTester } from "./ruleTester.js";
 
-ruleTester.run('valid-version', rules['valid-version'], {
-  invalid: [
-    {
-      code: `{
+ruleTester.run("valid-version", rule, {
+	invalid: [
+		{
+			code: `{
 	"version": null
 }
 `,
-      errors: [
-        {
-          column: 13,
-          data: {
-            error: 'the value is `null`, but should be a `string`',
-          },
-          line: 2,
-          messageId: 'validationError',
-        },
-      ],
-    },
-    {
-      code: `{ "version": 123 }`,
-      errors: [
-        {
-          column: 14,
-          data: {
-            error: 'the type should be a `string`, not `number`',
-          },
-          line: 1,
-          messageId: 'validationError',
-        },
-      ],
-    },
-    {
-      code: `{ "version": "" }`,
-      errors: [
-        {
-          column: 14,
-          data: {
-            error: 'the value is empty, but should be a valid version',
-          },
-          line: 1,
-          messageId: 'validationError',
-        },
-      ],
-    },
-    {
-      code: `{ "version": "latest" }`,
-      errors: [
-        {
-          column: 14,
-          data: {
-            error: 'the value is not a valid semver version',
-          },
-          line: 1,
-          messageId: 'validationError',
-        },
-      ],
-    },
-    {
-      code: `{ "version": "?!" }`,
-      errors: [
-        {
-          column: 14,
-          data: {
-            error: 'the value is not a valid semver version',
-          },
-          line: 1,
-          messageId: 'validationError',
-        },
-      ],
-    },
-    {
-      code: `{ "version": "1" }`,
-      errors: [
-        {
-          column: 14,
-          data: {
-            error: 'the value is not a valid semver version',
-          },
-          line: 1,
-          messageId: 'validationError',
-        },
-      ],
-    },
-    {
-      code: `{ "version": "1.2" }`,
-      errors: [
-        {
-          column: 14,
-          data: {
-            error: 'the value is not a valid semver version',
-          },
-          line: 1,
-          messageId: 'validationError',
-        },
-      ],
-    },
-  ],
-  valid: [
-    '{}',
-    `{ "version": "1.2.3" }`,
-    `{ "version": "1.2.3-beta" }`,
-    `{ "version": "1.2.3-beta.0" }`,
-  ],
+			errors: [
+				{
+					column: 13,
+					endColumn: 17,
+					line: 2,
+					messageId: "type",
+				},
+			],
+		},
+		{
+			code: `{ "version": 123 }`,
+			errors: [{ messageId: "type" }],
+		},
+		{
+			code: `{ "version": "" }`,
+			errors: [{ messageId: "invalid" }],
+		},
+		{
+			code: `{ "version": "latest" }`,
+			errors: [{ messageId: "invalid" }],
+		},
+		{
+			code: `{ "version": "?!" }`,
+			errors: [{ messageId: "invalid" }],
+		},
+		{
+			code: `{ "version": "1" }`,
+			errors: [{ messageId: "invalid" }],
+		},
+		{
+			code: `{ "version": "1.2" }`,
+			errors: [{ messageId: "invalid" }],
+		},
+	],
+	valid: [
+		"{}",
+		`{ "version": "1.2.3" }`,
+		`{ "version": "1.2.3-beta" }`,
+		`{ "version": "1.2.3-beta.0" }`,
+	],
 });

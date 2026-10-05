@@ -1,10 +1,10 @@
-import { rule } from '../../rules/order-properties.ts';
-import { ruleTester } from './ruleTester.ts';
+import { rule } from "../../rules/order-properties.js";
+import { ruleTester } from "./ruleTester.js";
 
-ruleTester.run('order-properties', rule, {
-  invalid: [
-    {
-      code: `{
+ruleTester.run("order-properties", rule, {
+	invalid: [
+		{
+			code: `{
 	"main": "index.js",
 	"homepage": "https://example.com",
 	"version": "1.0.0",
@@ -15,16 +15,30 @@ ruleTester.run('order-properties', rule, {
 	}
 }
 `,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'main' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      output: `{
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "homepage" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "name" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			output: `{
 	"name": "order-sort-package-json-implicit",
 	"version": "1.0.0",
 	"homepage": "https://example.com",
@@ -35,9 +49,9 @@ ruleTester.run('order-properties', rule, {
 	"main": "index.js"
 }
 `,
-    },
-    {
-      code: `{
+		},
+		{
+			code: `{
 	"name": "error-not-started-at-first",
 	"main": "index.js",
 	"homepage": "https://example.com",
@@ -48,16 +62,22 @@ ruleTester.run('order-properties', rule, {
 	}
 }
 `,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'main' },
-          line: 3,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      output: `{
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			output: `{
 	"name": "error-not-started-at-first",
 	"version": "1.0.0",
 	"homepage": "https://example.com",
@@ -68,9 +88,9 @@ ruleTester.run('order-properties', rule, {
 	"main": "index.js"
 }
 `,
-    },
-    {
-      code: `{
+		},
+		{
+			code: `{
 	"main": "index.js",
 	"homepage": "https://example.com",
 	"version": "1.0.0",
@@ -81,16 +101,30 @@ ruleTester.run('order-properties', rule, {
 	}
 }
 `,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'main' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      output: `{
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "homepage" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "name" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			output: `{
 	"name": "do-not-sort-sub-keys",
 	"version": "1.0.0",
 	"homepage": "https://example.com",
@@ -101,9 +135,9 @@ ruleTester.run('order-properties', rule, {
 	"main": "index.js"
 }
 `,
-    },
-    {
-      code: `{
+		},
+		{
+			code: `{
   "main": "index.js",
   "homepage": "https://example.com",
   "version": "1.0.0",
@@ -114,16 +148,30 @@ ruleTester.run('order-properties', rule, {
   }
 }
 `,
-      errors: [
-        {
-          column: 3,
-          data: { property: 'main' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      output: `{
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "homepage" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "name" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			output: `{
   "name": "respect-indent",
   "version": "1.0.0",
   "homepage": "https://example.com",
@@ -134,9 +182,9 @@ ruleTester.run('order-properties', rule, {
   "main": "index.js"
 }
 `,
-    },
-    {
-      code: `{
+		},
+		{
+			code: `{
 	"main": "index.js",
 	"homepage": "https://example.com",
 	"version": "1.0.0",
@@ -147,17 +195,31 @@ ruleTester.run('order-properties', rule, {
 	}
 }
 `,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'main' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      options: [{ order: 'sort-package-json' }],
-      output: `{
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "homepage" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "name" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			options: [{ order: "sort-package-json" }],
+			output: `{
 	"name": "order-sort-package-json-explicit",
 	"version": "1.0.0",
 	"homepage": "https://example.com",
@@ -168,113 +230,106 @@ ruleTester.run('order-properties', rule, {
 	"main": "index.js"
 }
 `,
-    },
-    {
-      code: `{
+		},
+		{
+			code: `{
 	"main": "index.js",
 	"homepage": "https://example.com",
 	"version": "1.0.0",
-	"name": "order-custom",
+	"name": "order-legacy",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/fake/github.git"
 	}
 }
 `,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'main' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      options: [{ order: ['version', 'name', 'repository'] }],
-      output: `{
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "homepage" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "name" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			options: [{ order: "legacy" }],
+			output: `{
+	"name": "order-legacy",
 	"version": "1.0.0",
-	"name": "order-custom",
+	"main": "index.js",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/fake/github.git"
 	},
+	"homepage": "https://example.com"
+}
+`,
+		},
+		{
+			code: `{
+	"main": "index.js",
 	"homepage": "https://example.com",
-	"main": "index.js"
-}
-`,
-    },
-    {
-      code: `{
-	"b": "workspace-config",
-	"cpu": ["x64"],
-	"a": "custom",
-	"name": "sort-non-standard",
-	"version": "1.0.0"
-}
-`,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'b' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      output: `{
-	"name": "sort-non-standard",
 	"version": "1.0.0",
-	"cpu": [
-		"x64"
+	"name": "order-legacy",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fake/github.git"
+	}
+}
+`,
+			errors: [
+				{
+					data: { property: "main" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "homepage" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "version" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "name" },
+					messageId: "incorrectOrder",
+				},
+				{
+					data: { property: "repository" },
+					messageId: "incorrectOrder",
+				},
+			],
+			filename: "package.json",
+			options: [{ order: ["version", "name", "repository"] }],
+			output: `{
+	"version": "1.0.0",
+	"name": "order-legacy",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fake/github.git"
+	},
+	"main": "index.js",
+	"homepage": "https://example.com"
+}
+`,
+		},
 	],
-	"a": "custom",
-	"b": "workspace-config"
-}
-`,
-    },
-    {
-      code: `{
-	"custom-z": "value",
-	"name": "custom-order-with-sort",
-	"custom-a": "value",
-	"version": "1.0.0"
-}
-`,
-      errors: [
-        {
-          column: 2,
-          data: { property: 'custom-z' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      options: [{ order: ['name', 'version'] }],
-      output: `{
-	"name": "custom-order-with-sort",
-	"version": "1.0.0",
-	"custom-a": "value",
-	"custom-z": "value"
-}
-`,
-    },
-    {
-      code: ['{', '	"version": "1.0.0",', '	"name": "foo"', '}'].join('\r\n'),
-      errors: [
-        {
-          column: 2,
-          data: { property: 'version' },
-          line: 2,
-          messageId: 'incorrectOrder',
-        },
-      ],
-      filename: 'package.json',
-      options: [{ order: ['name', 'version'] }],
-      output: ['{', '	"name": "foo",', '	"version": "1.0.0"', '}'].join('\r\n'),
-    },
-  ],
-  valid: [
-    `{
+	valid: [
+		`{
 	"name": "treat-yo-self",
 	"version": "1.1.1",
 	"description": "Once a year.",
@@ -283,7 +338,7 @@ ruleTester.run('order-properties', rule, {
 		"master"
 	]
 }`,
-    `{
+		`{
 	"name": "treat-yo-self",
 	"version": "0.1.0",
 	"private": true,
@@ -294,8 +349,8 @@ ruleTester.run('order-properties', rule, {
 	]
 }
 	`,
-    {
-      code: `{
+		{
+			code: `{
 	"version": "1.1.1",
 	"name": "treat-yo-self",
 	"description": "Once a year.",
@@ -305,10 +360,10 @@ ruleTester.run('order-properties', rule, {
 	]
 }
 	`,
-      options: [{ order: ['version', 'name'] }],
-    },
-    {
-      code: `{
+			options: [{ order: ["version", "name"] }],
+		},
+		{
+			code: `{
 	"name": "treat-yo-self",
 	"version": "1.1.1",
 	"description": "Once a year.",
@@ -323,10 +378,23 @@ ruleTester.run('order-properties', rule, {
 	"main": "index.js"
 }
 `,
-      options: [{ order: 'sort-package-json' }],
-    },
-    {
-      code: `{
+			options: [{ order: "sort-package-json" }],
+		},
+		{
+			code: `{
+	"name": "treat-yo-self",
+	"version": "1.1.1",
+	"description": "Once a year.",
+	"main": "index.js",
+	"exports": {
+		"import": "./index.js",
+		"require": "./index.js"
+	}
+}`,
+			options: [{ order: "legacy" }],
+		},
+		{
+			code: `{
     "name": "only-top-level-keys-are-ordered",
     "version": "1.0.0",
     "homepage": "https://example.com",
@@ -336,15 +404,6 @@ ruleTester.run('order-properties', rule, {
     },
     "main": "index.js"
 }`,
-    },
-    {
-      code: `{
-	"name": "sorted-non-standard",
-	"version": "1.0.0",
-	"cpu": ["x64"],
-	"a-custom": "value",
-	"z-custom": "value"
-}`,
-    },
-  ],
+		},
+	],
 });

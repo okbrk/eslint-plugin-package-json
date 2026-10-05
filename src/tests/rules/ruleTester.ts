@@ -1,50 +1,37 @@
-import { ESLint, RuleTester } from 'eslint';
-import * as jsoncESLintParser from 'jsonc-eslint-parser';
-import semver from 'semver';
-import * as vitest from 'vitest';
+import { RuleTester } from "eslint";
 
-import type { PackageJsonRuleModule } from '../../createRule.ts';
+import type { PackageJsonRuleModule } from "../../createRule.js";
 
 export type JsonRuleTester = RuleTester & {
-  run: JsonRuleTesterRun;
+	run: JsonRuleTesterRun;
 };
 
 export type JsonRuleTesterRun = (
-  name: string,
-  rule: PackageJsonRuleModule,
-  tests: {
-    invalid?: RuleTester.InvalidTestCase[] | undefined;
-    valid?: (RuleTester.ValidTestCase | string)[] | undefined;
-  },
+	name: string,
+	rule: PackageJsonRuleModule,
+	tests: {
+		invalid?: RuleTester.InvalidTestCase[] | undefined;
+		valid?: (RuleTester.ValidTestCase | string)[] | undefined;
+	},
 ) => void;
 
-RuleTester.describe = vitest.describe;
-RuleTester.it = vitest.it;
-RuleTester.itOnly = vitest.it.only;
+import jsoncESLintParser from "jsonc-eslint-parser";
 
 export const ruleTester = new RuleTester({
-  languageOptions: { parser: jsoncESLintParser },
+	languageOptions: { parser: jsoncESLintParser },
 }) as JsonRuleTester;
 
-// eslint-disable-next-line @typescript-eslint/unbound-method -- ruleTester.run is overridden below, so we need to keep a reference to the original method
 const originalRun = ruleTester.run;
 
 ruleTester.run = (name, rule, tests) => {
-  originalRun.call(ruleTester, name, rule as PackageJsonRuleModule, {
-    // Assertion options were added in ESLint v10.
-    ...(semver.gte(ESLint.version, '10.0.0') && {
-      assertionOptions: {
-        requireData: true,
-        requireMessage: true,
-      },
-    }),
-    invalid: tests.invalid?.map((test) => ({
-      filename: 'package.json',
-      ...test,
-    })),
-    valid: tests.valid?.map((test) => ({
-      filename: 'package.json',
-      ...(typeof test === 'string' ? { code: test } : { ...test }),
-    })),
-  });
+	originalRun.call(ruleTester, name, rule as PackageJsonRuleModule, {
+		invalid: tests.invalid?.map((test) => ({
+			filename: "package.json",
+			...test,
+		})),
+		valid: tests.valid?.map((test) => ({
+			filename: "package.json",
+			...(typeof test === "string" ? { code: test } : { ...test }),
+		})),
+	});
 };

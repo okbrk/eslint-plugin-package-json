@@ -1,59 +1,25 @@
-import {
-  type CreateRequirePropertyRuleOptions,
-  createSimpleRequirePropertyRule,
-} from '../utils/createSimpleRequirePropertyRule.ts';
-import { getGitAuthor } from '../utils/git/getGitAuthor.ts';
+import type { PackageJsonRuleModule } from "../createRule.js";
 
-export const propertyConfig: [name: string, options?: CreateRequirePropertyRuleOptions][] = [
-  [
-    'author',
-    {
-      fixValue: getGitAuthor,
-    },
-  ],
-  ['bin'],
-  ['browser'],
-  ['bugs', { ignorePrivateDefault: true }],
-  ['bundleDependencies'],
-  ['config'],
-  ['contributors'],
-  ['cpu'],
-  ['dependencies'],
-  ['description', { isRecommended: true }],
-  ['devDependencies'],
-  ['devEngines'],
-  ['directories'],
-  ['engines'],
-  ['exports', { ignorePrivateDefault: true, isRecommended: true }],
-  ['files', { ignorePrivateDefault: true, isRecommended: true }],
-  ['funding'],
-  ['gypfile'],
-  ['homepage', { ignorePrivateDefault: true }],
-  ['keywords', { ignorePrivateDefault: true }],
-  ['libc'],
-  ['license', { ignorePrivateDefault: true, isRecommended: true }],
-  ['main'],
-  ['man'],
-  ['module'],
-  ['name', { ignorePrivateDefault: true, isRecommended: true }],
-  ['optionalDependencies'],
-  ['os'],
-  ['packageManager'],
-  ['peerDependencies'],
-  ['peerDependenciesMeta'],
-  ['private', { fixValue: false }],
-  ['publishConfig', { ignorePrivateDefault: true }],
-  ['repository', { ignorePrivateDefault: true, isRecommended: true }],
-  ['scripts'],
-  ['sideEffects', { ignorePrivateDefault: true, isRecommended: true }],
-  ['type', { fixValue: 'commonjs', isRecommended: true }],
-  ['types'],
-  ['version', { ignorePrivateDefault: true, isRecommended: true }],
-];
+import { createRequirePropertyRule } from "../utils/createRequirePropertyRule.js";
 
-export const rules = Object.fromEntries(
-  propertyConfig.map(([propertyName, options]) => {
-    const { rule, ruleName } = createSimpleRequirePropertyRule(propertyName, options);
-    return [ruleName, rule];
-  }),
+// List of all properties we want to create require- rules for,
+// in the format [propertyName, isRecommended]
+const properties = [
+	["author", false],
+	["keywords", false],
+	["name", true],
+	["version", true],
+	// TODO: More to come!
+] satisfies [string, boolean][];
+
+/** All require- flavor rules */
+export const rules = properties.reduce<Record<string, PackageJsonRuleModule>>(
+	(acc, [propertyName, isRecommended]) => {
+		acc[`require-${propertyName}`] = createRequirePropertyRule(
+			propertyName,
+			isRecommended,
+		);
+		return acc;
+	},
+	{},
 );

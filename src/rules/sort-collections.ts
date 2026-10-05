@@ -1,190 +1,148 @@
-import detectIndent from 'detect-indent';
-import { detectNewlineGraceful } from 'detect-newline';
-import type { AST } from 'jsonc-eslint-parser';
-import sortPackageJson from 'sort-package-json';
+import * as ESTree from "estree";
+import { AST } from "jsonc-eslint-parser";
 
-import { createRule } from '../createRule.ts';
+import { createRule } from "../createRule.js";
 
-const defaultCollections = new Set([
-  'config',
-  'dependencies',
-  'devDependencies',
-  'exports',
-  'optionalDependencies',
-  'overrides',
-  'peerDependencies',
-  'peerDependenciesMeta',
-  'scripts',
-]);
+const defaultCollections = [
+	"scripts",
+	"devDependencies",
+	"dependencies",
+	"peerDependencies",
+	"overrides",
+	"config",
+	"exports",
+];
 
-export const rule = createRule({
-  create(context) {
-    const toSort = new Map<string, null | string[]>(
-      (context.options[0] ?? Array.from(defaultCollections)).map((entry) =>
-        typeof entry === 'string' ? [entry, null] : [entry.key, entry.order],
-      ),
-    );
+type Options = string[];
 
-    return {
-      'JSONProperty:exit'(node) {
-        const { key: nodeKey, value: collection } = node;
+export const rule = createRule<Options>({
+	create(context) {
+		const toSort = context.options[0] || defaultCollections;
+		return {
+			"JSONProperty:exit"(node) {
+				const { key, value } = node as AST.JSONProperty & {
+					key: AST.JSONStringLiteral;
+				};
 
-        if (nodeKey.type !== 'JSONLiteral' || collection.type !== 'JSONObjectExpression') {
-          return;
-        }
+				const collection = value;
+				if (
+					collection.type === "JSONObjectExpression" &&
+					toSort.includes(key.value)
+				) {
+					const currentOrder = collection.properties;
+					const scripts = new Set(
+						currentOrder.map(
+							(prop) => (prop.key as AST.JSONStringLiteral).value,
+						),
+					);
 
-        const keyPartsReversed = [nodeKey.value];
-        for (
-          let currNode: AST.JSONNode | null | undefined = node.parent;
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          currNode;
-          currNode = currNode.parent
-        ) {
-          if (currNode.type === 'JSONProperty' && currNode.key.type === 'JSONLiteral') {
-            keyPartsReversed.push(currNode.key.value);
-          } else if (currNode.type === 'JSONArrayExpression') {
-            return;
-          }
-        }
-        const key = keyPartsReversed.reverse().join('.');
-        // `undefined` means the key isn't configured for sorting; `null` means
-        // sort it the default way; an array is a custom order.
-        const customOrder = toSort.get(key);
-        if (customOrder === undefined) {
-          return;
-        }
+					const desiredOrder = currentOrder.slice().sort((a, b) => {
+						let aKey = (a.key as AST.JSONStringLiteral).value;
+						let bKey = (b.key as AST.JSONStringLiteral).value;
 
-        const currentOrder = collection.properties;
+						if (key.value !== "scripts") {
+							return aKey > bKey ? 1 : -1;
+						} else {
+							let modifier = 0;
 
-        const isScripts = keyPartsReversed.at(-1) === 'scripts';
+							if (
+								aKey.startsWith("pre") &&
+								scripts.has(aKey.substring(3))
+							) {
+								aKey = aKey.substring(3);
+								modifier -= 1;
+							} else if (
+								aKey.startsWith("post") &&
+								scripts.has(aKey.substring(4))
+							) {
+								aKey = aKey.substring(4);
+								modifier += 1;
+							}
 
-        // The "natural" order for keys not pinned by a custom order: `scripts`
-        // are lifecycle-aware (via `sort-package-json`), everything else is
-        // lexicographical.
-        let naturalCompare: (a: string, b: string) => number;
-        if (isScripts) {
-          const scriptsSource = context.sourceCode.getText(node);
-          const minimalJson = JSON.parse(`{${scriptsSource}}`) as {
-            scripts: Record<string, unknown>;
-          };
-          const { scripts: sortedScripts } = sortPackageJson(minimalJson);
-          const lifecycleIndex = new Map(Object.keys(sortedScripts).map((k, i) => [k, i]));
-          naturalCompare = (a, b) => (lifecycleIndex.get(a) ?? 0) - (lifecycleIndex.get(b) ?? 0);
-        } else {
-          naturalCompare = (a, b) => (a > b ? 1 : -1);
-        }
+							if (
+								bKey.startsWith("pre") &&
+								scripts.has(bKey.substring(3))
+							) {
+								bKey = bKey.substring(3);
+								modifier += 1;
+							} else if (
+								bKey.startsWith("post") &&
+								scripts.has(bKey.substring(4))
+							) {
+								bKey = bKey.substring(4);
+								modifier -= 1;
+							}
 
-        // Custom order (if any) takes precedence; keys not listed in it fall
-        // back to the natural order above (lifecycle-aware for `scripts`).
-        const orderIndex = new Map((customOrder ?? []).map((k, i) => [k, i]));
-        const rank = (k: string) => orderIndex.get(k) ?? orderIndex.size;
+							if (aKey === bKey) {
+								return modifier;
+							}
 
-        const desiredOrder = currentOrder.toSorted((a, b) => {
-          const aKey = (a.key as AST.JSONStringLiteral).value;
-          const bKey = (b.key as AST.JSONStringLiteral).value;
-          const ai = rank(aKey);
-          const bi = rank(bKey);
+							return aKey > bKey ? 1 : -1;
+						}
+					});
+					if (
+						currentOrder.some(
+							(property, i) => desiredOrder[i] !== property,
+						)
+					) {
+						context.report({
+							data: {
+								key: key.value,
+							},
+							fix(fixer) {
+								return fixer.replaceText(
+									collection as unknown as ESTree.Node,
+									JSON.stringify(
+										desiredOrder.reduce<
+											Record<string, unknown>
+										>((out, property) => {
+											out[
+												(
+													property.key as AST.JSONStringLiteral
+												).value
+											] = JSON.parse(
+												context.sourceCode.getText(
+													property.value as unknown as ESTree.Node,
+												),
+											);
+											return out;
+										}, {}),
+										null,
+										2,
+									)
+										.split("\n")
+										.join("\n  "), // nest indents
+								);
+							},
+							loc: collection.loc,
+							messageId: "notAlphabetized",
+							node: node as unknown as ESTree.Node,
+						});
+					}
+				}
+			},
+		};
+	},
 
-          return ai === bi ? naturalCompare(aKey, bKey) : ai - bi;
-        });
-
-        if (currentOrder.some((property, i) => desiredOrder[i] !== property)) {
-          context.report({
-            data: {
-              key,
-            },
-            fix(fixer) {
-              const { text } = context.sourceCode;
-              const { indent, type } = detectIndent(text);
-              const newline = detectNewlineGraceful(text);
-              const indentUnit = type === 'tab' ? '\t' : indent || '  ';
-
-              const replacementJson = JSON.stringify(
-                desiredOrder.reduce<Record<string, unknown>>((out, property) => {
-                  out[(property.key as AST.JSONStringLiteral).value] = JSON.parse(
-                    context.sourceCode.getText(property.value),
-                  );
-                  return out;
-                }, {}),
-                null,
-                indentUnit,
-              );
-
-              const jsonLines = replacementJson.split('\n');
-
-              const collectionStartLine = collection.loc.start.line;
-              const lineText = context.sourceCode.lines[collectionStartLine - 1];
-              const leadingWhitespaceMatch = /^\s*/.exec(lineText);
-              const leadingWhitespace = leadingWhitespaceMatch ? leadingWhitespaceMatch[0] : '';
-
-              const result = jsonLines
-                .map((l, i) => (i === 0 ? l : leadingWhitespace + l))
-                .join(newline);
-
-              return fixer.replaceText(collection, result);
-            },
-            loc: collection.loc,
-            messageId: customOrder
-              ? 'unsortedOrder'
-              : isScripts
-                ? 'unsortedScripts'
-                : 'unsortedKeys',
-            node,
-          });
-        }
-      },
-    };
-  },
-  meta: {
-    defaultOptions: [Array.from(defaultCollections)],
-    docs: {
-      category: 'Best Practices',
-      description:
-        'Selected collections must be in a consistent order (lexicographical for most; lifecycle-aware for scripts).',
-      recommended: true,
-    },
-    fixable: 'code',
-    messages: {
-      unsortedKeys: "Entries in '{{ key }}' are not in lexicographical order",
-      unsortedOrder: "Entries in '{{ key }}' are not in the specified order",
-      unsortedScripts:
-        "Entries in 'scripts' are not in lexicographical order and grouped by lifecycles",
-    },
-    schema: [
-      {
-        description:
-          'Array of package properties to require sorting. Provide a string to sort that collection lexicographically (lifecycle-aware for `scripts`), or an object to sort it by a specified order.',
-        items: {
-          anyOf: [
-            {
-              type: 'string',
-            },
-            {
-              additionalProperties: false,
-              properties: {
-                key: {
-                  description: 'The collection property to sort.',
-                  type: 'string',
-                },
-                order: {
-                  description:
-                    'The order to sort the collection by. Keys not listed are appended in lexicographical order.',
-                  items: {
-                    type: 'string',
-                  },
-                  type: 'array',
-                  uniqueItems: true,
-                },
-              },
-              required: ['key', 'order'],
-              type: 'object',
-            },
-          ],
-        },
-        type: 'array',
-      },
-    ],
-    type: 'layout',
-  },
-  name: 'sort-collections',
+	meta: {
+		docs: {
+			category: "Best Practices",
+			description:
+				"Dependencies, scripts, and configuration values must be declared in alphabetical order.",
+			recommended: true,
+		},
+		fixable: "code",
+		messages: {
+			notAlphabetized: "Package {{ key }} are not alphabetized",
+		},
+		schema: [
+			{
+				items: {
+					type: "string",
+				},
+				type: "array",
+			},
+		],
+		type: "layout",
+	},
 });

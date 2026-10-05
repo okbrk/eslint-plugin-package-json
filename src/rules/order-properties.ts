@@ -1,102 +1,148 @@
-import detectIndent from 'detect-indent';
-import { detectNewlineGraceful } from 'detect-newline';
-import type { AST } from 'jsonc-eslint-parser';
-import sortObjectKeys from 'sort-object-keys';
-import { sortOrder } from 'sort-package-json';
+import type { AST as JsonAST } from "jsonc-eslint-parser";
 
-import { createRule } from '../createRule.ts';
+import detectIndent from "detect-indent";
+import detectNewline from "detect-newline";
+import sortObjectKeys from "sort-object-keys";
+import { sortOrder } from "sort-package-json";
 
-export const rule = createRule({
-  create(context) {
-    return {
-      'Program:exit'() {
-        const { ast, text } = context.sourceCode;
+import { createRule } from "../createRule.js";
 
-        const { order = 'sort-package-json' } = context.options[0] ?? {};
+const standardOrderLegacy = [
+	"name",
+	"version",
+	"private",
+	"publishConfig",
+	"description",
+	"main",
+	"exports",
+	"browser",
+	"files",
+	"bin",
+	"directories",
+	"man",
+	"scripts",
+	"repository",
+	"keywords",
+	"author",
+	"license",
+	"bugs",
+	"homepage",
+	"config",
+	"dependencies",
+	"devDependencies",
+	"peerDependencies",
+	"optionalDependencies",
+	"bundledDependencies",
+	"engines",
+	"os",
+	"cpu",
+];
 
-        const requiredOrder = order === 'sort-package-json' ? sortOrder : order;
+type Options = [{ order: Order }?];
 
-        const json = JSON.parse(text) as Record<string, unknown>;
+type Order = "legacy" | "sort-package-json" | string[];
 
-        const allKeys = Object.keys(json);
-        const orderedNonStandardKeys = allKeys.filter((key) => !requiredOrder.includes(key)).sort();
+export const rule = createRule<Options>({
+	create(context) {
+		return {
+			"Program:exit"() {
+				const { ast, text } = context.sourceCode;
 
-        const orderedSource = sortObjectKeys(json, [...requiredOrder, ...orderedNonStandardKeys]);
-        const orderedKeys = Object.keys(orderedSource);
+				const options = {
+					order: "sort-package-json",
+					...context.options[0],
+				} satisfies Options[0];
 
-        const { properties } = ast.body[0].expression;
+				const requiredOrder =
+					options.order === "legacy"
+						? standardOrderLegacy
+						: options.order === "sort-package-json"
+							? sortOrder
+							: options.order;
 
-        for (let i = 0; i < properties.length; i += 1) {
-          const property = properties[i].key as AST.JSONStringLiteral;
-          const { value } = property;
+				const json = JSON.parse(text) as Record<string, unknown>;
+				const orderedSource = sortObjectKeys(json, [
+					...requiredOrder,
+					...Object.keys(json),
+				]);
+				const orderedKeys = Object.keys(orderedSource);
 
-          if (value === orderedKeys[i]) {
-            continue;
-          }
+				const { properties } = ast.body[0].expression;
 
-          context.report({
-            data: {
-              property: value,
-            },
-            fix(fixer) {
-              const { indent, type } = detectIndent(text);
-              const endCharacters = text.endsWith('\n') ? '\n' : '';
-              const newline = detectNewlineGraceful(text);
-              let result =
-                JSON.stringify(orderedSource, null, type === 'tab' ? '\t' : indent) + endCharacters;
-              if (newline === '\r\n') {
-                result = result.replace(/\n/g, newline);
-              }
+				for (let i = 0; i < properties.length; i += 1) {
+					const property = properties[i]
+						.key as JsonAST.JSONStringLiteral;
+					const { value } = property;
 
-              return fixer.replaceText(context.sourceCode.ast, result);
-            },
-            loc: properties[i].loc,
-            messageId: 'incorrectOrder',
-          });
-          // Only report on the first mis-ordered property
-          return;
-        }
-      },
-    };
-  },
-  meta: {
-    defaultOptions: [
-      {
-        order: 'sort-package-json',
-      },
-    ],
-    docs: {
-      category: 'Stylistic',
-      description: 'Enforces that package properties are declared in a consistent order.',
-    },
-    fixable: 'code',
-    messages: {
-      incorrectOrder: 'Top-level property `{{property}}` is not ordered in the standard way.',
-    },
-    schema: [
-      {
-        additionalProperties: false,
-        properties: {
-          order: {
-            anyOf: [
-              {
-                enum: ['sort-package-json'],
-                type: ['string'],
-              },
-              {
-                items: {
-                  type: ['string'],
-                },
-                type: ['array'],
-              },
-            ],
-            description: 'Specifies the sorting order of top-level properties.',
-          },
-        },
-        type: 'object',
-      },
-    ],
-    type: 'layout',
-  },
-  name: 'order-properties',
+					if (value === orderedKeys[i]) {
+						continue;
+					}
+
+					context.report({
+						data: {
+							property: value,
+						},
+						fix(fixer) {
+							const { indent, type } = detectIndent(text);
+							const endCharacters = text.endsWith("\n")
+								? "\n"
+								: "";
+							const newline = detectNewline.graceful(text);
+							let result =
+								JSON.stringify(
+									orderedSource,
+									null,
+									type === "tab" ? "\t" : indent,
+								) + endCharacters;
+							if (newline === "\r\n") {
+								result = result.replace(/\n/g, newline);
+							}
+
+							return fixer.replaceText(
+								context.sourceCode.ast,
+								result,
+							);
+						},
+						loc: properties[i].loc,
+						messageId: "incorrectOrder",
+					});
+				}
+			},
+		};
+	},
+	meta: {
+		docs: {
+			category: "Best Practices",
+			description:
+				"Package properties must be declared in standard order",
+			recommended: true,
+		},
+		fixable: "code",
+		messages: {
+			incorrectOrder:
+				'Package top-level property "{{property}}" is not ordered in the npm standard way. Run the ESLint auto-fixer to correct.',
+		},
+		schema: [
+			{
+				properties: {
+					order: {
+						anyOf: [
+							{
+								enum: ["legacy", "sort-package-json"],
+								type: ["string"],
+							},
+							{
+								items: {
+									type: ["string"],
+								},
+								type: ["array"],
+							},
+						],
+					},
+				},
+				type: "object",
+			},
+		],
+		type: "layout",
+	},
 });

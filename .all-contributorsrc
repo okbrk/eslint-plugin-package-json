@@ -1,5 +1,7 @@
 {
-  "badgeTemplate": "\t<a href=\"#contributors\" target=\"_blank\"><img alt=\"👪 All Contributors: <%= contributors.length %>\" src=\"https://img.shields.io/badge/%F0%9F%91%AA_all_contributors-<%= contributors.length %>-21bb42.svg\" /></a>",
+  "badgeTemplate": "<img alt=\"All Contributors: <%= contributors.length %> 👪\" src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>_👪-21bb42.svg\" />",
+  "commit": false,
+  "commitConvention": "angular",
   "contributors": [
     {
       "login": "b3rnhard",
@@ -22,9 +24,7 @@
         "infra",
         "doc",
         "maintenance",
-        "ideas",
-        "content",
-        "projectManagement"
+        "ideas"
       ]
     },
     {
@@ -70,10 +70,7 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/5511220?v=4",
       "profile": "https://github.com/Zamiell",
       "contributions": [
-        "code",
-        "ideas",
-        "bug",
-        "doc"
+        "code"
       ]
     },
     {
@@ -206,8 +203,7 @@
         "ideas",
         "tool",
         "doc",
-        "code",
-        "bug"
+        "code"
       ]
     },
     {
@@ -227,12 +223,7 @@
       "contributions": [
         "infra",
         "code",
-        "maintenance",
-        "ideas",
-        "bug",
-        "tool",
-        "doc",
-        "projectManagement"
+        "maintenance"
       ]
     },
     {
@@ -243,232 +234,17 @@
       "contributions": [
         "code"
       ]
-    },
-    {
-      "login": "sunnytsang1998",
-      "name": "sunnytsang1998",
-      "avatar_url": "https://avatars.githubusercontent.com/u/207208443?v=4",
-      "profile": "https://github.com/sunnytsang1998",
-      "contributions": [
-        "bug"
-      ]
-    },
-    {
-      "login": "csjewell",
-      "name": "Curtis Jewell",
-      "avatar_url": "https://avatars.githubusercontent.com/u/67483?v=4",
-      "profile": "http://www.curtisjewell.dev/",
-      "contributions": [
-        "ideas"
-      ]
-    },
-    {
-      "login": "lishaduck",
-      "name": "Eli",
-      "avatar_url": "https://avatars.githubusercontent.com/u/88557639?v=4",
-      "profile": "http://lishaduck.github.io",
-      "contributions": [
-        "ideas",
-        "bug"
-      ]
-    },
-    {
-      "login": "andreww2012",
-      "name": "Andrew Kazakov",
-      "avatar_url": "https://avatars.githubusercontent.com/u/6554045?v=4",
-      "profile": "https://github.com/andreww2012",
-      "contributions": [
-        "bug",
-        "code",
-        "ideas",
-        "tool"
-      ]
-    },
-    {
-      "login": "roottool",
-      "name": "roottool",
-      "avatar_url": "https://avatars.githubusercontent.com/u/11808736?v=4",
-      "profile": "https://roottool.vercel.app",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "anomiex",
-      "name": "Brad Jorsch",
-      "avatar_url": "https://avatars.githubusercontent.com/u/1030580?v=4",
-      "profile": "https://github.com/anomiex",
-      "contributions": [
-        "ideas",
-        "bug",
-        "code"
-      ]
-    },
-    {
-      "login": "MorrisonCole",
-      "name": "Morrison Cole",
-      "avatar_url": "https://avatars.githubusercontent.com/u/963368?v=4",
-      "profile": "https://morrisoncole.co.uk",
-      "contributions": [
-        "bug",
-        "doc"
-      ]
-    },
-    {
-      "login": "privatenumber",
-      "name": "Hiroki Osame",
-      "avatar_url": "https://avatars.githubusercontent.com/u/1075694?v=4",
-      "profile": "https://hirok.io",
-      "contributions": [
-        "ideas",
-        "code",
-        "bug"
-      ]
-    },
-    {
-      "login": "christopher-buss",
-      "name": "Christopher Buss",
-      "avatar_url": "https://avatars.githubusercontent.com/u/32301681?v=4",
-      "profile": "https://christopher-buss.gitbook.io/portfolio",
-      "contributions": [
-        "bug",
-        "ideas",
-        "code"
-      ]
-    },
-    {
-      "login": "AlexMan123456",
-      "name": "AlexTheMan",
-      "avatar_url": "https://avatars.githubusercontent.com/u/172595284?v=4",
-      "profile": "https://github.com/AlexMan123456",
-      "contributions": [
-        "ideas"
-      ]
-    },
-    {
-      "login": "patrik-csak",
-      "name": "Patrik Csak",
-      "avatar_url": "https://avatars.githubusercontent.com/u/4766244?v=4",
-      "profile": "http://patrikcsak.com",
-      "contributions": [
-        "bug"
-      ]
-    },
-    {
-      "login": "olivierzal",
-      "name": "Olivier Zalmanski",
-      "avatar_url": "https://avatars.githubusercontent.com/u/88216225?v=4",
-      "profile": "https://github.com/OlivierZal",
-      "contributions": [
-        "maintenance",
-        "doc"
-      ]
-    },
-    {
-      "login": "marcalexiei",
-      "name": "Marco Pasqualetti",
-      "avatar_url": "https://avatars.githubusercontent.com/u/24919330?v=4",
-      "profile": "https://github.com/marcalexiei",
-      "contributions": [
-        "code",
-        "tool",
-        "maintenance"
-      ]
-    },
-    {
-      "login": "FloEdelmann",
-      "name": "Flo Edelmann",
-      "avatar_url": "https://avatars.githubusercontent.com/u/202916?v=4",
-      "profile": "https://open-fixture-library.org",
-      "contributions": [
-        "doc"
-      ]
-    },
-    {
-      "login": "vanyauhalin",
-      "name": "Ivan Uhalin",
-      "avatar_url": "https://avatars.githubusercontent.com/u/56481109?v=4",
-      "profile": "https://vanyauhalin.me/",
-      "contributions": [
-        "ideas"
-      ]
-    },
-    {
-      "login": "ShayanTheNerd",
-      "name": "Shayan Zamani",
-      "avatar_url": "https://avatars.githubusercontent.com/u/81762186?v=4",
-      "profile": "https://shayan-zamani.me",
-      "contributions": [
-        "ideas",
-        "doc",
-        "code"
-      ]
-    },
-    {
-      "login": "Sigmabrogz",
-      "name": "Sigmabro",
-      "avatar_url": "https://avatars.githubusercontent.com/u/122412346?v=4",
-      "profile": "https://github.com/Sigmabrogz",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "ClementValot",
-      "name": "Clément Valot",
-      "avatar_url": "https://avatars.githubusercontent.com/u/65364056?v=4",
-      "profile": "https://github.com/ClementValot",
-      "contributions": [
-        "bug",
-        "code"
-      ]
-    },
-    {
-      "login": "belozer",
-      "name": "Sergey Belozyorcev",
-      "avatar_url": "https://avatars.githubusercontent.com/u/1655916?v=4",
-      "profile": "https://github.com/belozer",
-      "contributions": [
-        "ideas"
-      ]
-    },
-    {
-      "login": "wesleytodd",
-      "name": "Wes Todd",
-      "avatar_url": "https://avatars.githubusercontent.com/u/1027776?v=4",
-      "profile": "https://www.wesleytodd.com/",
-      "contributions": [
-        "ideas"
-      ]
-    },
-    {
-      "login": "DetachHead",
-      "name": "DetachHead",
-      "avatar_url": "https://avatars.githubusercontent.com/u/57028336?v=4",
-      "profile": "https://github.com/DetachHead",
-      "contributions": [
-        "code",
-        "ideas"
-      ]
-    },
-    {
-      "login": "thernstig",
-      "name": "Tobias Hernstig",
-      "avatar_url": "https://avatars.githubusercontent.com/u/30827238?v=4",
-      "profile": "https://github.com/thernstig",
-      "contributions": [
-        "bug"
-      ]
     }
   ],
+  "contributorsPerLine": 7,
   "contributorsSortAlphabetically": true,
-  "projectName": "eslint-plugin-package-json",
-  "projectOwner": "michaelfaith",
-  "repoType": "github",
-  "commitConvention": "angular",
   "files": [
     "README.md"
   ],
-  "commitType": "docs",
-  "contributorsPerLine": 7
+  "imageSize": 100,
+  "projectName": "eslint-plugin-package-json",
+  "projectOwner": "JoshuaKGoldberg",
+  "repoHost": "https://github.com",
+  "repoType": "github",
+  "commitType": "docs"
 }

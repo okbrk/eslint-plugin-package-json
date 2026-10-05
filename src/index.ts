@@ -1,8 +1,12 @@
-import { plugin } from './plugin.ts';
+import { plugin, recommendedRuleSettings } from "./plugin.js";
 
 export const rules = plugin.rules;
-export const configs = plugin.configs;
+
+export const configs = {
+	recommended: {
+		plugins: ["package-json"],
+		rules: recommendedRuleSettings,
+	},
+};
 
 export default plugin;
-
-export type { PackageJsonPluginSettings } from './createRule.ts';

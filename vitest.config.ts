@@ -1,16 +1,15 @@
-import { defineConfig, type ViteUserConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
-const config: ViteUserConfig = defineConfig({
-  test: {
-    clearMocks: true,
-    coverage: {
-      exclude: ['dist', 'src/index.ts', 'src/rules/index.ts', 'src/tests'],
-      include: ['src'],
-      reporter: ['html', 'lcov', 'text'],
-    },
-    exclude: ['dist', 'e2e', 'node_modules'],
-    setupFiles: ['console-fail-test/setup'],
-  },
+export default defineConfig({
+	test: {
+		clearMocks: true,
+		coverage: {
+			all: true,
+			exclude: ["lib"],
+			include: ["src"],
+			reporter: ["html", "lcov"],
+		},
+		exclude: ["lib", "node_modules"],
+		setupFiles: ["console-fail-test/setup", "./src/tests/globalSetup.js"],
+	},
 });
-
-export default config;

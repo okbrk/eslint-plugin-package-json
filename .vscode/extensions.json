@@ -1,9 +1,8 @@
 {
-  "recommendations": [
-    "astro-build.astro-vscode",
-    "dbaeumer.vscode-eslint",
-    "oxc.oxc-vscode",
-    "streetsidesoftware.code-spell-checker",
-    "vitest.explorer"
-  ]
+	"recommendations": [
+		"DavidAnson.vscode-markdownlint",
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"streetsidesoftware.code-spell-checker"
+	]
 }

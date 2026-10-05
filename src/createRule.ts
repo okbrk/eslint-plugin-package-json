@@ -1,94 +1,52 @@
-import type { AST as ESLintAST, Rule, SourceCode } from 'eslint';
-import type * as ESTree from 'estree';
-import type { FromSchema as InferJsonSchemaType, JSONSchema } from 'json-schema-to-ts';
-import type { AST, RuleListener } from 'jsonc-eslint-parser';
+import type * as ESTree from "estree";
 
-import { isPackageJson } from './utils/predicates/index.ts';
+import { AST, Rule, SourceCode } from "eslint";
+import { AST as JsonAST, RuleListener } from "jsonc-eslint-parser";
 
-export type ASTBodyExpression = ESTree.Expression & {
-  properties: ASTBodyProperty[];
+import { isPackageJson } from "./utils/isPackageJson.js";
+
+export type JsonAstBodyExpression = ESTree.Expression & {
+	properties: JsonAstBodyProperty[];
 };
 
-export type ASTBodyProperty = AST.JSONProperty & {
-  value: string;
+export type JsonAstBodyProperty = JsonAST.JSONProperty & {
+	value: string;
 };
 
-export interface ASTBodyStatement extends ESTree.ExpressionStatement {
-  expression: ASTBodyExpression;
+export interface JsonAstBodyStatement extends ESTree.ExpressionStatement {
+	expression: JsonAstBodyExpression;
 }
 
-export interface PackageAST extends ESLintAST.Program {
-  body: [ASTBodyStatement];
-}
-
-export interface PackageJsonPluginSettings {
-  /**
-   * Whether `require-*` rules, if used, should enforce the presence of
-   * the corresponding property *in package.json files with `"private": true`*.
-   *
-   * If not specified, it will not enforce the presence only of `name` and `version` properties.
-   */
-  enforceForPrivate?: boolean;
+export interface PackageJsonAst extends AST.Program {
+	body: [JsonAstBodyStatement];
 }
 
 export interface PackageJsonRuleContext<Options extends unknown[] = unknown[]>
-  extends Rule.RuleContext {
-  options: Options;
-  settings: {
-    packageJson?: PackageJsonPluginSettings;
-  };
-  sourceCode: PackageJsonSourceCode;
+	extends Rule.RuleContext {
+	options: Options;
+	sourceCode: PackageJsonSourceCode;
 }
 
-export interface PackageJsonRuleModule<
-  Options extends unknown[] = unknown[],
-  Schema extends JSONSchema[] = JSONSchema[],
-> {
-  create(context: PackageJsonRuleContext<Options>): RuleListener;
-  meta: Omit<Rule.RuleMetaData, 'defaultOptions' | 'docs' | 'schema'> & {
-    defaultOptions?: NoInfer<Options>;
-    docs?: Rule.RuleMetaData['docs'] & {
-      category?: string;
-      /** An optional route segment to group this rule under */
-      ruleGroup?: string;
-    };
-    schema?: Schema;
-  };
+export interface PackageJsonRuleModule<Options extends unknown[] = unknown[]> {
+	create(context: PackageJsonRuleContext<Options>): RuleListener;
+	meta: Rule.RuleMetaData;
 }
 
 export interface PackageJsonSourceCode extends SourceCode {
-  ast: PackageAST;
+	ast: PackageJsonAst;
 }
 
-type InferJsonSchemasTupleType<T extends JSONSchema[]> = {
-  [K in keyof T]?: InferJsonSchemaType<T[K]>;
-};
+export function createRule<Options extends unknown[]>(
+	rule: PackageJsonRuleModule<Options>,
+) {
+	return {
+		...rule,
+		create(context: PackageJsonRuleContext<Options>) {
+			if (!isPackageJson(context.filename)) {
+				return {};
+			}
 
-/**
- * Rule options type is inferred from the JSON schema by [json-schema-to-ts](https://www.npmjs.com/package/json-schema-to-ts).
- * If you're not satisfied with the inferred type, you may specify it manually in the first type parameter.
- */
-export function createRule<
-  OptionsOverride extends unknown[] = never,
-  const Schema extends JSONSchema[] = JSONSchema[],
-  // `[T] extends [never]` correctly checks if `T` is `never`, see https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
-  _OptionsResolved extends unknown[] = [OptionsOverride] extends [never]
-    ? InferJsonSchemasTupleType<Schema>
-    : OptionsOverride,
->(
-  rule: PackageJsonRuleModule<_OptionsResolved, Schema> & { name: string },
-): PackageJsonRuleModule<_OptionsResolved, Schema> {
-  const ruleGroup = rule.meta.docs?.ruleGroup;
-  return {
-    create(context) {
-      return isPackageJson(context.filename) ? rule.create(context) : {};
-    },
-    meta: {
-      ...rule.meta,
-      docs: {
-        ...rule.meta.docs,
-        url: `https://eslint-plugin-package-json.dev/rules/${ruleGroup ? `${ruleGroup}/` : ''}${rule.name}`,
-      },
-    },
-  };
+			return rule.create(context);
+		},
+	};
 }

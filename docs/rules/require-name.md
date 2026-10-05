@@ -1,4 +1,27 @@
 # require-name
 
-> [!NOTE]
-> You can find the docs for this rule on our website: <https://eslint-plugin-package-json.dev/rules/require-properties/require-name>
+💼 This rule is enabled in the ✅ `recommended` config.
+
+<!-- end auto-generated rule header -->
+
+This rule checks for the existence of the `"name"` property in a package.json,
+and reports a violation if it doesn't exist.
+
+Example of **incorrect** code for this rule:
+
+```json
+{
+	"version": "13.0.0",
+	"author": "Jessica Moss"
+}
+```
+
+Example of **correct** code for this rule:
+
+```json
+{
+	"name": "thee-silver-mt-zion",
+	"version": "13.0.0",
+	"author": "Jessica Moss"
+}
+```
